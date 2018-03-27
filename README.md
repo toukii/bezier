@@ -1,7 +1,6 @@
 # bezier
 
 Bézier curve
-
 =============
 
 
@@ -23,5 +22,5 @@ NewPoint(888, 788),
 NewPoint(999, 999),
 ```
 
-![][http://7xku3c.com1.z0.glb.clouddn.com/github/bezier.png]
+![](http://7xku3c.com1.z0.glb.clouddn.com/github/bezier.png)
 
