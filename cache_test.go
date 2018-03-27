@@ -32,14 +32,6 @@ func TestCacheStr(t *testing.T) {
 	fmt.Println(cah)
 }
 
-type Point struct {
-	X, Y int
-}
-
-func (p *Point) Key() string {
-	return fmt.Sprintf("%d-%d", p.X, p.Y)
-}
-
 func TestCachePoint(t *testing.T) {
 	cah := NewCache(3)
 	fmt.Println(cah)
