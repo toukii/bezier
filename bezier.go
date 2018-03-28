@@ -111,7 +111,7 @@ func Trh(ps []*Point, start, end bool) []byte {
 	if th > 0.8 {
 		th = 1.0 / math.Pow(math.E, th_+0.2) // shorten
 	}
-	fmt.Printf("%+v %+v\n", th_, th)
+	// fmt.Printf("%+v %+v\n", th_, th)
 	dlt.Shorten(th) // shorten the dlt
 
 	ctl := ps[1].CtlPoints(dlt) // reflect the 2 control points
