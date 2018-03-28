@@ -38,10 +38,4 @@ M110 105 C220 236, 220 244, 175 245M175 245 C131 245, 129 255, 155 300M155 300 C
 
 ### bezier.svg
 
-![](http://7xku3c.com1.z0.glb.clouddn.com/github/bezier.svg)
-
-### bezier.png
-
-
-![](http://7xku3c.com1.z0.glb.clouddn.com/github/bezier.png)
-
+![](http://7xku3c.com1.z0.glb.clouddn.com/github/bezier.svg?v=0.1)
