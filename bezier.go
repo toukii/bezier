@@ -82,20 +82,20 @@ func (p *Point) Spilt() bool {
 	return p.X == -1 && p.Y == -1
 }
 
-func Trhs(ps ...*Point) []byte {
+func Trhs(reverse bool, ps ...*Point) []byte {
 	size := len(ps)
 	buf := bytes.NewBuffer(make([]byte, 0, 2048))
 	for i := 3; i <= size; i++ {
-		trh := Trh(ps[i-3:i], i == 3, i == size)
+		trh := Trh(reverse, ps[i-3:i], i == 3, i == size)
 		buf.Write(trh)
 	}
 	return buf.Bytes()
 }
 
-func Trh(ps []*Point, start, end bool) []byte {
+func Trh(reverse bool, ps []*Point, start, end bool) []byte {
 	size := len(ps)
 	if size > 3 {
-		return Trhs(ps...)
+		return Trhs(reverse, ps...)
 	} else if size == 2 {
 		return goutils.ToByte(fmt.Sprintf("M%sL", ps[0].PathFmt(), ps[1].PathFmt()))
 	} else if size <= 1 {
@@ -129,5 +129,12 @@ func Trh(ps []*Point, start, end bool) []byte {
 		endP = p2
 	}
 
-	return goutils.ToByte(fmt.Sprintf("M%s C%s, %s, %s", startP.PathFmt(), ctl[0].PathFmt(), ctl[1].PathFmt(), endP.PathFmt()))
+	var ctl1, ctl2 *Point
+	if reverse {
+		ctl1, ctl2 = ctl[0], ctl[1]
+	} else {
+		ctl1, ctl2 = ctl[1], ctl[0]
+	}
+
+	return goutils.ToByte(fmt.Sprintf("M%s C%s, %s, %s", startP.PathFmt(), ctl1.PathFmt(), ctl2.PathFmt(), endP.PathFmt()))
 }

@@ -15,10 +15,11 @@ import (
 
 var (
 	PolylineFmt = `<polyline points="{{range . }}{{.X}},{{.Y}} {{end}}" stroke="yellow" stroke-width="8" fill="none"></polyline>`
-	PathFmt     = `<path d="{{.Path}}" stroke="red" stroke-width="3" fill="none"></path>`
-	SvgFmt      = `<svg width="350" height="350" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	PathFmt     = `<path d="{{.Path}}" stroke="{{.Color}}" stroke-width="3" fill="none"></path>`
+	SvgFmt      = `<svg width="550" height="550" version="1.1" xmlns="http://www.w3.org/2000/svg">
 {{.Polyline}}
-{{.Path}}
+{{.Path1}}
+{{.Path2}}
 </svg>`
 
 	PolylineTpl *template.Template
@@ -69,7 +70,7 @@ func MultiExcute(tpl *template.Template, item ...*bezier.Point) []byte {
 func randomPoints(n int) []*bezier.Point {
 	points := make([]*bezier.Point, n)
 	for i := 0; i < n; i++ {
-		points[i] = bezier.NewPoint(rd.Intn(350), rd.Intn(350))
+		points[i] = bezier.NewPoint(rd.Intn(550), rd.Intn(550))
 	}
 	return points
 }
@@ -77,16 +78,23 @@ func randomPoints(n int) []*bezier.Point {
 func TestBezierSvg(t *testing.T) {
 	points := randomPoints(8)
 
-	data := map[string]string{
-		"Path": goutils.ToString(bezier.Trhs(points...)),
+	data1 := map[string]string{
+		"Path":  goutils.ToString(bezier.Trhs(true, points...)),
+		"Color": "red",
 	}
-	// fmt.Println(data)
+	data2 := map[string]string{
+		"Path":  goutils.ToString(bezier.Trhs(false, points...)),
+		"Color": "green",
+	}
+	// fmt.Println(data1)
 
-	path := Excute(PathTpl, data)
+	path1 := Excute(PathTpl, data1)
+	path2 := Excute(PathTpl, data2)
 	polyline := MultiExcute(PolylineTpl, points...)
 
 	svgData := map[string]string{
-		"Path":     goutils.ToString(path),
+		"Path1":    goutils.ToString(path1),
+		"Path2":    goutils.ToString(path2),
 		"Polyline": goutils.ToString(polyline),
 	}
 
