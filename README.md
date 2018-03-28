@@ -1,6 +1,6 @@
 # bezier
 
-Bézier curve
+Bézier curve(贝塞尔曲线) in svg
 =============
 
 
