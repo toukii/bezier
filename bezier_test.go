@@ -64,6 +64,12 @@ func TestTrh(t *testing.T) {
 
 func TestTrhs(t *testing.T) {
 	trhs := Trhs(
+		NewPoint(110, 105),
+		NewPoint(220, 240),
+		NewPoint(130, 250),
+		NewPoint(180, 350),
+		NewPoint(280, 450),
+		NewPoint(480, 150),
 		NewPoint(111, 211),
 		NewPoint(222, 122),
 		NewPoint(333, 433),

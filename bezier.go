@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+
+	"github.com/toukii/goutils"
 )
 
 type IPoint interface {
@@ -80,29 +82,26 @@ func (p *Point) Spilt() bool {
 	return p.X == -1 && p.Y == -1
 }
 
-func Trhs(ps ...*Point) string {
+func Trhs(ps ...*Point) []byte {
 	size := len(ps)
-	if size == 3 {
-		return Trh(ps, true, true)
-	} else if size == 2 {
-		return fmt.Sprintf("M%sL", ps[0].PathFmt(), ps[1].PathFmt())
-	} else if size == 1 {
-		return ""
-	}
 	buf := bytes.NewBuffer(make([]byte, 0, 2048))
 	for i := 3; i <= size; i++ {
 		trh := Trh(ps[i-3:i], i == 3, i == size)
-		buf.WriteString(trh)
+		buf.Write(trh)
 	}
-	return buf.String()
+	return buf.Bytes()
 }
 
-func Trh(ps []*Point, start, end bool) string {
+func Trh(ps []*Point, start, end bool) []byte {
 	size := len(ps)
-	if size != 3 {
-		fmt.Println("size:", size)
-		return ""
+	if size > 3 {
+		return Trhs(ps...)
+	} else if size == 2 {
+		return goutils.ToByte(fmt.Sprintf("M%sL", ps[0].PathFmt(), ps[1].PathFmt()))
+	} else if size <= 1 {
+		return nil
 	}
+
 	p1 := ps[0].Center(ps[1])                            // p1
 	p2 := ps[1].Center(ps[2])                            // p2
 	dlt := p1.Dlt(p2)                                    // dlt
@@ -130,5 +129,5 @@ func Trh(ps []*Point, start, end bool) string {
 		endP = p2
 	}
 
-	return fmt.Sprintf("M%s C%s, %s, %s", startP.PathFmt(), ctl[0].PathFmt(), ctl[1].PathFmt(), endP.PathFmt())
+	return goutils.ToByte(fmt.Sprintf("M%s C%s, %s, %s", startP.PathFmt(), ctl[0].PathFmt(), ctl[1].PathFmt(), endP.PathFmt()))
 }
