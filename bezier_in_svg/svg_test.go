@@ -1,7 +1,7 @@
 package bezier_in_svg
 
 import (
-	// "fmt"
+	"fmt"
 	"math/rand"
 	"testing"
 	"text/template"
@@ -93,6 +93,6 @@ func TestBezierSvg(t *testing.T) {
 	// fmt.Printf("svgData: %+v", svgData)
 
 	svgOutput := Excute(SvgTpl, svgData)
-	// fmt.Printf("svg: %s", svgOutput)
+	fmt.Printf("svg: %s", svgOutput)
 	icat.DisplaySVG(svgOutput)
 }

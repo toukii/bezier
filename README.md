@@ -3,6 +3,14 @@
 Bézier curve(贝塞尔曲线) in svg
 =============
 
+```
+go get github.com/toukii/bezier
+cd $GOPATH/src/github.com/toukii/bezier/bezier_in_svg
+go test -v
+```
+
+![](http://7xku3c.com1.z0.glb.clouddn.com/github/bezier_svg.svg)
+
 
 ```go
 NewPoint(110, 105),
