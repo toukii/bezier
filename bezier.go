@@ -71,10 +71,10 @@ func shorten(i int, th float64) int {
 }
 
 // 2 control points
-func (xy *Point) CtlPoints(dlt *Point) [2]*Point {
+func (xy *Point) CtlPoints(dlt *Point, dltTh float64) [2]*Point {
 	return [2]*Point{
-		NewPoint(xy.X+dlt.X, xy.Y+dlt.Y),
-		NewPoint(xy.X-dlt.X, xy.Y-dlt.Y),
+		NewPoint(xy.X+shorten(dlt.X, dltTh), xy.Y+shorten(dlt.Y, dltTh)),
+		NewPoint(xy.X-shorten(dlt.X, 1-dltTh), xy.Y-shorten(dlt.Y, 1-dltTh)),
 	}
 }
 
@@ -82,20 +82,20 @@ func (p *Point) Spilt() bool {
 	return p.X == -1 && p.Y == -1
 }
 
-func Trhs(reverse bool, ps ...*Point) []byte {
+func Trhs(ps ...*Point) []byte {
 	size := len(ps)
 	buf := bytes.NewBuffer(make([]byte, 0, 2048))
 	for i := 3; i <= size; i++ {
-		trh := Trh(reverse, ps[i-3:i], i == 3, i == size)
+		trh := Trh(ps[i-3:i], i == 3, i == size)
 		buf.Write(trh)
 	}
 	return buf.Bytes()
 }
 
-func Trh(reverse bool, ps []*Point, start, end bool) []byte {
+func Trh(ps []*Point, start, end bool) []byte {
 	size := len(ps)
 	if size > 3 {
-		return Trhs(reverse, ps...)
+		return Trhs(ps...)
 	} else if size == 2 {
 		return goutils.ToByte(fmt.Sprintf("M%sL", ps[0].PathFmt(), ps[1].PathFmt()))
 	} else if size <= 1 {
@@ -111,10 +111,14 @@ func Trh(reverse bool, ps []*Point, start, end bool) []byte {
 	if th > 0.8 {
 		th = 1.0 / math.Pow(math.E, th_+0.2) // shorten
 	}
-	// fmt.Printf("%+v %+v\n", th_, th)
+
+	p1p := ps[1].MahatMetric(p1)
+	p2p := ps[1].MahatMetric(p2)
+	dltTh := p1p / (p1p + p2p)
+	// fmt.Printf("dltTh:%+v, th:%+v -> %+v\n", dltTh, th_, th)
 	dlt.Shorten(th) // shorten the dlt
 
-	ctl := ps[1].CtlPoints(dlt) // reflect the 2 control points
+	ctl := ps[1].CtlPoints(dlt, dltTh) // reflect the 2 control points
 
 	// start or end point
 	var startP, endP *Point
@@ -129,12 +133,5 @@ func Trh(reverse bool, ps []*Point, start, end bool) []byte {
 		endP = p2
 	}
 
-	var ctl1, ctl2 *Point
-	if reverse {
-		ctl1, ctl2 = ctl[0], ctl[1]
-	} else {
-		ctl1, ctl2 = ctl[1], ctl[0]
-	}
-
-	return goutils.ToByte(fmt.Sprintf("M%s C%s, %s, %s", startP.PathFmt(), ctl1.PathFmt(), ctl2.PathFmt(), endP.PathFmt()))
+	return goutils.ToByte(fmt.Sprintf("M%s C%s, %s, %s", startP.PathFmt(), ctl[0].PathFmt(), ctl[1].PathFmt(), endP.PathFmt()))
 }

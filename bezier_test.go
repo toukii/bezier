@@ -19,7 +19,7 @@ func TestCtl(t *testing.T) {
 	xy := NewPoint(0, 10)
 	dlt := p1.Dlt(p2)
 
-	ps := xy.CtlPoints(dlt)
+	ps := xy.CtlPoints(dlt, 1.0)
 	t.Logf("ps:%+v, %+v", ps[0], ps[1])
 }
 
@@ -29,7 +29,7 @@ func TestCtl2(t *testing.T) {
 	xy := NewPoint(6, 10)
 	dlt := p1.Dlt(p2)
 
-	ps := xy.CtlPoints(dlt)
+	ps := xy.CtlPoints(dlt, 1.0)
 	t.Logf("ps:%+v, %+v", ps[0], ps[1])
 }
 

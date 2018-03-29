@@ -19,7 +19,6 @@ var (
 	SvgFmt      = `<svg width="550" height="550" version="1.1" xmlns="http://www.w3.org/2000/svg">
 {{.Polyline}}
 {{.Path1}}
-{{.Path2}}
 </svg>`
 
 	PolylineTpl *template.Template
@@ -75,15 +74,50 @@ func randomPoints(n int) []*bezier.Point {
 	return points
 }
 
+func noSmoothPoints() []*bezier.Point {
+	return []*bezier.Point{
+		bezier.NewPoint(243, 216),
+		bezier.NewPoint(217, 241),
+		bezier.NewPoint(124, 512),
+		bezier.NewPoint(502, 432),
+		bezier.NewPoint(547, 476),
+		bezier.NewPoint(309, 123),
+		bezier.NewPoint(418, 161),
+		bezier.NewPoint(542, 377),
+	}
+}
+
+func samplePoints() []*bezier.Point {
+	return []*bezier.Point{
+		bezier.NewPoint(110, 105),
+		bezier.NewPoint(220, 240),
+		bezier.NewPoint(130, 250),
+		bezier.NewPoint(180, 350),
+		bezier.NewPoint(280, 450),
+		bezier.NewPoint(480, 150),
+		bezier.NewPoint(111, 211),
+		bezier.NewPoint(222, 122),
+		bezier.NewPoint(333, 433),
+		bezier.NewPoint(444, 344),
+		bezier.NewPoint(555, 655),
+		bezier.NewPoint(666, 566),
+		bezier.NewPoint(777, 877),
+		bezier.NewPoint(888, 788),
+		bezier.NewPoint(999, 999),
+	}
+}
+
 func TestBezierSvg(t *testing.T) {
-	points := randomPoints(8)
+	// points := randomPoints(8)
+	// points := noSmoothPoints()
+	points := samplePoints()
 
 	data1 := map[string]string{
-		"Path":  goutils.ToString(bezier.Trhs(true, points...)),
+		"Path":  goutils.ToString(bezier.Trhs(points...)),
 		"Color": "red",
 	}
 	data2 := map[string]string{
-		"Path":  goutils.ToString(bezier.Trhs(false, points...)),
+		"Path":  goutils.ToString(bezier.Trhs(points...)),
 		"Color": "green",
 	}
 	// fmt.Println(data1)
