@@ -92,12 +92,16 @@ func Trhs(ps ...*Point) []byte {
 	return buf.Bytes()
 }
 
+var (
+	Shorten = true
+)
+
 func Trh(ps []*Point, start, end bool) []byte {
 	size := len(ps)
 	if size > 3 {
 		return Trhs(ps...)
 	} else if size == 2 {
-		return goutils.ToByte(fmt.Sprintf("M%sL", ps[0].PathFmt(), ps[1].PathFmt()))
+		return ML(ps...)
 	} else if size <= 1 {
 		return nil
 	}
@@ -116,7 +120,9 @@ func Trh(ps []*Point, start, end bool) []byte {
 	p2p := ps[1].MahatMetric(p2)
 	dltTh := p1p / (p1p + p2p)
 	// fmt.Printf("dltTh:%+v, th:%+v -> %+v\n", dltTh, th_, th)
-	dlt.Shorten(th) // shorten the dlt
+	if Shorten {
+		dlt.Shorten(th) // shorten the dlt
+	}
 
 	ctl := ps[1].CtlPoints(dlt, dltTh) // reflect the 2 control points
 
@@ -134,4 +140,43 @@ func Trh(ps []*Point, start, end bool) []byte {
 	}
 
 	return goutils.ToByte(fmt.Sprintf("M%s C%s, %s, %s", startP.PathFmt(), ctl[0].PathFmt(), ctl[1].PathFmt(), endP.PathFmt()))
+}
+
+func TrhCtls(ps ...*Point) []*Point {
+	size := len(ps)
+	if size > 3 {
+		ret := make([]*Point, 0, 4)
+		for i := 3; i <= size; i++ {
+			ret = append(ret, TrhCtls(ps[i-3:i]...)...)
+		}
+		return ret
+	} else if size <= 2 {
+		return nil
+	}
+
+	p1 := ps[0].Center(ps[1])                            // p1
+	p2 := ps[1].Center(ps[2])                            // p2
+	dlt := p1.Dlt(p2)                                    // dlt
+	c12 := p1.Center(p2)                                 // center point of p1 and p2
+	th_ := c12.MahatMetric(ps[1]) / dlt.MahatMetric(nil) // metric threshold
+	th := th_
+	if th > 0.8 {
+		th = 1.0 / math.Pow(math.E, th_+0.2) // shorten
+	}
+
+	p1p := ps[1].MahatMetric(p1)
+	p2p := ps[1].MahatMetric(p2)
+	dltTh := p1p / (p1p + p2p)
+	// fmt.Printf("dltTh:%+v, th:%+v -> %+v\n", dltTh, th_, th)
+
+	if Shorten {
+		dlt.Shorten(th) // shorten the dlt
+	}
+
+	ctl := ps[1].CtlPoints(dlt, dltTh) // reflect the 2 control points
+	return []*Point{ctl[0], ctl[1]}
+}
+
+func ML(dbl ...*Point) []byte {
+	return goutils.ToByte(fmt.Sprintf("M%sL%s", dbl[0].PathFmt(), dbl[1].PathFmt()))
 }
