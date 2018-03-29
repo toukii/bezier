@@ -71,10 +71,10 @@ func shorten(i int, th float64) int {
 }
 
 // 2 control points
-func (xy *Point) CtlPoints(dlt *Point) [2]*Point {
+func (xy *Point) CtlPoints(dlt *Point, dltTh float64) [2]*Point {
 	return [2]*Point{
-		NewPoint(xy.X+dlt.X, xy.Y+dlt.Y),
-		NewPoint(xy.X-dlt.X, xy.Y-dlt.Y),
+		NewPoint(xy.X+shorten(dlt.X, dltTh), xy.Y+shorten(dlt.Y, dltTh)),
+		NewPoint(xy.X-shorten(dlt.X, 1-dltTh), xy.Y-shorten(dlt.Y, 1-dltTh)),
 	}
 }
 
@@ -111,10 +111,14 @@ func Trh(ps []*Point, start, end bool) []byte {
 	if th > 0.8 {
 		th = 1.0 / math.Pow(math.E, th_+0.2) // shorten
 	}
-	// fmt.Printf("%+v %+v\n", th_, th)
+
+	p1p := ps[1].MahatMetric(p1)
+	p2p := ps[1].MahatMetric(p2)
+	dltTh := p1p / (p1p + p2p)
+	// fmt.Printf("dltTh:%+v, th:%+v -> %+v\n", dltTh, th_, th)
 	dlt.Shorten(th) // shorten the dlt
 
-	ctl := ps[1].CtlPoints(dlt) // reflect the 2 control points
+	ctl := ps[1].CtlPoints(dlt, dltTh) // reflect the 2 control points
 
 	// start or end point
 	var startP, endP *Point

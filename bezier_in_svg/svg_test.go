@@ -15,10 +15,10 @@ import (
 
 var (
 	PolylineFmt = `<polyline points="{{range . }}{{.X}},{{.Y}} {{end}}" stroke="yellow" stroke-width="8" fill="none"></polyline>`
-	PathFmt     = `<path d="{{.Path}}" stroke="red" stroke-width="3" fill="none"></path>`
-	SvgFmt      = `<svg width="350" height="350" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	PathFmt     = `<path d="{{.Path}}" stroke="{{.Color}}" stroke-width="3" fill="none"></path>`
+	SvgFmt      = `<svg width="550" height="550" version="1.1" xmlns="http://www.w3.org/2000/svg">
 {{.Polyline}}
-{{.Path}}
+{{.Path1}}
 </svg>`
 
 	PolylineTpl *template.Template
@@ -69,24 +69,66 @@ func MultiExcute(tpl *template.Template, item ...*bezier.Point) []byte {
 func randomPoints(n int) []*bezier.Point {
 	points := make([]*bezier.Point, n)
 	for i := 0; i < n; i++ {
-		points[i] = bezier.NewPoint(rd.Intn(350), rd.Intn(350))
+		points[i] = bezier.NewPoint(rd.Intn(550), rd.Intn(550))
 	}
 	return points
 }
 
-func TestBezierSvg(t *testing.T) {
-	points := randomPoints(8)
-
-	data := map[string]string{
-		"Path": goutils.ToString(bezier.Trhs(points...)),
+func noSmoothPoints() []*bezier.Point {
+	return []*bezier.Point{
+		bezier.NewPoint(243, 216),
+		bezier.NewPoint(217, 241),
+		bezier.NewPoint(124, 512),
+		bezier.NewPoint(502, 432),
+		bezier.NewPoint(547, 476),
+		bezier.NewPoint(309, 123),
+		bezier.NewPoint(418, 161),
+		bezier.NewPoint(542, 377),
 	}
-	// fmt.Println(data)
+}
 
-	path := Excute(PathTpl, data)
+func samplePoints() []*bezier.Point {
+	return []*bezier.Point{
+		bezier.NewPoint(110, 105),
+		bezier.NewPoint(220, 240),
+		bezier.NewPoint(130, 250),
+		bezier.NewPoint(180, 350),
+		bezier.NewPoint(280, 450),
+		bezier.NewPoint(480, 150),
+		bezier.NewPoint(111, 211),
+		bezier.NewPoint(222, 122),
+		bezier.NewPoint(333, 433),
+		bezier.NewPoint(444, 344),
+		bezier.NewPoint(555, 655),
+		bezier.NewPoint(666, 566),
+		bezier.NewPoint(777, 877),
+		bezier.NewPoint(888, 788),
+		bezier.NewPoint(999, 999),
+	}
+}
+
+func TestBezierSvg(t *testing.T) {
+	// points := randomPoints(8)
+	// points := noSmoothPoints()
+	points := samplePoints()
+
+	data1 := map[string]string{
+		"Path":  goutils.ToString(bezier.Trhs(points...)),
+		"Color": "red",
+	}
+	data2 := map[string]string{
+		"Path":  goutils.ToString(bezier.Trhs(points...)),
+		"Color": "green",
+	}
+	// fmt.Println(data1)
+
+	path1 := Excute(PathTpl, data1)
+	path2 := Excute(PathTpl, data2)
 	polyline := MultiExcute(PolylineTpl, points...)
 
 	svgData := map[string]string{
-		"Path":     goutils.ToString(path),
+		"Path1":    goutils.ToString(path1),
+		"Path2":    goutils.ToString(path2),
 		"Polyline": goutils.ToString(polyline),
 	}
 
