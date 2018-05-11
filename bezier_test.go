@@ -40,7 +40,7 @@ func TestTrh(t *testing.T) {
 		NewPoint(333, 433),
 	}
 
-	trh := Trh(ps, false, false)
+	trh := Trh(2, ps, false, false)
 	t.Logf("trh: %+s", trh)
 
 	ps = []*Point{
@@ -49,7 +49,7 @@ func TestTrh(t *testing.T) {
 		NewPoint(444, 344),
 	}
 
-	trh = Trh(ps, false, false)
+	trh = Trh(2, ps, false, false)
 	t.Logf("trh: %+s", trh)
 
 	ps = []*Point{
@@ -58,12 +58,12 @@ func TestTrh(t *testing.T) {
 		NewPoint(555, 655),
 	}
 
-	trh = Trh(ps, false, false)
+	trh = Trh(2, ps, false, false)
 	t.Logf("trh: %+s", trh)
 }
 
 func TestTrhs(t *testing.T) {
-	trhs := Trhs(
+	trhs := Trhs(2,
 		NewPoint(110, 105),
 		NewPoint(220, 240),
 		NewPoint(130, 250),

@@ -15,10 +15,14 @@ import (
 
 var (
 	PolylineFmt = `<polyline points="{{range . }}{{.X}},{{.Y}} {{end}}" stroke="yellow" stroke-width="8" fill="none"></polyline>`
-	PathFmt     = `<path d="{{.Path}}" stroke="{{.Color}}" stroke-width="3" fill="none"></path>`
+	PathFmt     = `<path d="{{.Path}}" stroke="{{.Color}}" stroke-width="{{.StrokeWidth}}" fill="none"></path>`
 	SvgFmt      = `<svg width="550" height="550" version="1.1" xmlns="http://www.w3.org/2000/svg">
 {{.Polyline}}
+{{.Path2}}
 {{.Path1}}
+{{.Path11}}
+<path d="{{.Ctl1}}" stroke="purple" stroke-width="2" fill="none"></path>
+<path d="{{.Ctl2}}" stroke="green" stroke-width="2" fill="none"></path>
 </svg>`
 
 	PolylineTpl *template.Template
@@ -109,32 +113,64 @@ func samplePoints() []*bezier.Point {
 
 func TestBezierSvg(t *testing.T) {
 	// points := randomPoints(8)
-	// points := noSmoothPoints()
-	points := samplePoints()
+	points := noSmoothPoints()
+	// points := samplePoints()
 
 	data1 := map[string]string{
-		"Path":  goutils.ToString(bezier.Trhs(points...)),
-		"Color": "red",
+		"Path":        goutils.ToString(bezier.Trhs(2, points...)),
+		"Color":       "red",
+		"StrokeWidth": "3",
 	}
+	fmt.Println()
+
+	bezier.ShortenTh = 1.2
+	data11 := map[string]string{
+		"Path":        goutils.ToString(bezier.Trhs(2, points...)),
+		"Color":       "purple",
+		"StrokeWidth": "2",
+	}
+	fmt.Println()
+
 	data2 := map[string]string{
-		"Path":  goutils.ToString(bezier.Trhs(points...)),
-		"Color": "green",
+		"Path":        goutils.ToString(bezier.Trhs(1, points...)),
+		"Color":       "green",
+		"StrokeWidth": "4",
 	}
 	// fmt.Println(data1)
 
+	ctls := bezier.TrhCtls(points...)
+	ctlSize := len(ctls) / 2
+	ctlWr := bytes.NewWriter(make([]byte, 0, 1024))
+	for i := 0; i < ctlSize; i++ {
+		ctlWr.Write(bezier.PathTuple(ctls[i*2], ctls[i*2+1]))
+	}
+
+	ctls2 := bezier.TrhCtls(points...)
+	ctlSize2 := len(ctls2) / 2
+	ctlWr2 := bytes.NewWriter(make([]byte, 0, 1024))
+	for i := 0; i < ctlSize2; i++ {
+		ctlWr2.Write(bezier.PathTuple(ctls2[i*2], ctls2[i*2+1]))
+	}
+
 	path1 := Excute(PathTpl, data1)
+	path11 := Excute(PathTpl, data11)
 	path2 := Excute(PathTpl, data2)
 	polyline := MultiExcute(PolylineTpl, points...)
 
+	// path2 = nil
+
 	svgData := map[string]string{
 		"Path1":    goutils.ToString(path1),
+		"Path11":   goutils.ToString(path11),
 		"Path2":    goutils.ToString(path2),
 		"Polyline": goutils.ToString(polyline),
+		"Ctl1":     goutils.ToString(ctlWr.Bytes()),
+		"Ctl2":     goutils.ToString(ctlWr2.Bytes()),
 	}
 
 	// fmt.Printf("svgData: %+v", svgData)
 
 	svgOutput := Excute(SvgTpl, svgData)
-	fmt.Printf("svg: %s", svgOutput)
+	fmt.Printf("%s", svgOutput)
 	icat.DisplaySVG(svgOutput)
 }
