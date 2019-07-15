@@ -15,6 +15,7 @@ type IPoint interface {
 
 type Point struct {
 	X, Y int
+	Z    int64
 }
 
 var (
@@ -137,7 +138,7 @@ func Trh(ctlSize int, ps []*Point, start, end bool) []byte {
 	p1p := ps[1].MahatMetric(p1)
 	p2p := ps[1].MahatMetric(p2)
 	dltTh := p1p / (p1p + p2p)
-	fmt.Printf("dltTh:%+v, th:%+v -> %+v\n", dltTh, th_, th)
+	// fmt.Printf("dltTh:%+v, th:%+v -> %+v\n", dltTh, th_, th)
 	dlt.Shorten(th) // shorten the dlt
 
 	ctl := ps[1].CtlPoints(dlt, dltTh) // reflect the 2 control points
