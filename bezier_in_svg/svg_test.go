@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	PolylineFmt = `<polyline points="{{range . }}{{.X}},{{.Y}} {{end}}" stroke="yellow" stroke-width="8" fill="none"></polyline>`
+	PolylineFmt = `<polyline points="{{range . }}{{.X}},{{.Y}} {{end}}" stroke="#33b5e5" stroke-width="1" fill="none"></polyline>`
 	PathFmt     = `<path d="{{.Path}}" stroke="{{.Color}}" stroke-width="{{.StrokeWidth}}" fill="none"></path>`
 	SvgFmt      = `<svg width="550" height="550" version="1.1" xmlns="http://www.w3.org/2000/svg">
 {{.Polyline}}
@@ -112,8 +112,8 @@ func samplePoints() []*bezier.Point {
 }
 
 func TestBezierSvg(t *testing.T) {
-	// points := randomPoints(8)
-	points := noSmoothPoints()
+	points := randomPoints(8)
+	// points := noSmoothPoints()
 	// points := samplePoints()
 
 	data1 := map[string]string{
