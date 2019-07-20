@@ -111,15 +111,30 @@ func samplePoints() []*bezier.Point {
 	}
 }
 
+func samplePointsSame() []*bezier.Point {
+	return []*bezier.Point{
+		bezier.NewPoint(573, 57),
+		bezier.NewPoint(235, 68),
+		bezier.NewPoint(453, 186),
+		bezier.NewPoint(453, 186),
+		bezier.NewPoint(453, 186),
+		bezier.NewPoint(453, 186),
+		bezier.NewPoint(453, 186),
+		bezier.NewPoint(235, 68),
+		bezier.NewPoint(573, 0),
+	}
+}
+
 func TestBezierSvg(t *testing.T) {
-	points := randomPoints(8)
+	// points := randomPoints(8)
 	// points := noSmoothPoints()
 	// points := samplePoints()
+	points := samplePointsSame()
 
 	data1 := map[string]string{
 		"Path":        goutils.ToString(bezier.Trhs(2, points...)),
 		"Color":       "red",
-		"StrokeWidth": "3",
+		"StrokeWidth": "5",
 	}
 	fmt.Println()
 

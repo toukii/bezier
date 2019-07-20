@@ -139,6 +139,9 @@ func Trh(ctlSize int, ps []*Point, start, end bool) []byte {
 	p2p := ps[1].MahatMetric(p2)
 	dltTh := p1p / (p1p + p2p)
 	// fmt.Printf("dltTh:%+v, th:%+v -> %+v\n", dltTh, th_, th)
+	if p1p+p2p <= 0.01 {
+		return nil
+	}
 	dlt.Shorten(th) // shorten the dlt
 
 	ctl := ps[1].CtlPoints(dlt, dltTh) // reflect the 2 control points
@@ -172,7 +175,9 @@ func TrhCtls(ps ...*Point) []*Point {
 	p2p := ps[1].MahatMetric(p2)
 	dltTh := p1p / (p1p + p2p)
 	// fmt.Printf("dltTh:%+v, th:%+v -> %+v\n", dltTh, th_, th)
-
+	if p1p+p2p <= 0.01 {
+		return nil
+	}
 	dlt.Shorten(th) // shorten the dlt
 
 	ctl := ps[1].CtlPoints(dlt, dltTh) // reflect the 2 control points
